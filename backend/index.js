@@ -16,9 +16,11 @@ let app = express()
 
 app.use(express.json())
 app.use(cookieParser())
+const productionOrigins = (process.env.CORS_ORIGIN || '').split(',').map(s => s.trim()).filter(Boolean)
+
 app.use(cors({
  origin: function (origin, callback) {
-   if (!origin || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1') || /^http:\/\/192\.168\./.test(origin) || /^http:\/\/10\./.test(origin)) {
+   if (!origin || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1') || /^http:\/\/192\.168\./.test(origin) || /^http:\/\/10\./.test(origin) || productionOrigins.includes(origin)) {
      return callback(null, true)
    }
    return callback(null, false)
