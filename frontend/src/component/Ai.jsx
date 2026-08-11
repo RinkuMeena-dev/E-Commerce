@@ -9,18 +9,15 @@ function Ai() {
   let navigate = useNavigate()
   let [activeAi,setActiveAi] = useState(false)
   let openingSound = new Audio(open)
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+  const recognition = SpeechRecognition ? new SpeechRecognition() : null
 
  function speak(message){
 let utterence=new SpeechSynthesisUtterance(message)
 window.speechSynthesis.speak(utterence)
   }
 
-
-  const speechRecognition=window.SpeechRecognition || window.webkitSpeechRecognition
-  const recognition = new speechRecognition()
-   if(!recognition){
-    console.log("not supported")
-  }
+  if (recognition) {
 
   recognition.onresult = (e)=>{
     const transcript = e.results[0][0].transcript.trim();
@@ -72,11 +69,13 @@ window.speechSynthesis.speak(utterence)
   recognition.onend=()=>{
    setActiveAi(false)
   }
+  }
   return (
-    <div className='fixed lg:bottom-[20px] md:bottom-[40px] bottom-[80px] left-[2%] ' onClick={()=>{recognition.start();
+    <div className='fixed lg:bottom-[20px] md:bottom-[40px] bottom-[80px] left-[2%] ' onClick={()=>{if (recognition) {
+    recognition.start();
     openingSound.play()
     setActiveAi(true)
-    }}>
+    }}}>
       <img src={ai} alt="" className={`w-[100px] cursor-pointer ${activeAi ? 'translate-x-[10%] translate-y-[-10%] scale-125 ' : 'translate-x-[0] translate-y-[0] scale-100'} transition-transform` } style={{
         filter: ` ${activeAi?"drop-shadow(0px 0px 30px #00d2fc)":"drop-shadow(0px 0px 20px black)"}`
       }}/>
