@@ -4,10 +4,13 @@ import razorpay from 'razorpay'
 import dotenv from 'dotenv'
 dotenv.config()
 const currency = 'inr'
-const razorpayInstance = new razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET
-})
+let razorpayInstance = null
+if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+    razorpayInstance = new razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET
+    })
+}
 
 // for User
 export const placeOrder = async (req,res) => {
@@ -41,7 +44,9 @@ export const placeOrder = async (req,res) => {
 
 export const placeOrderRazorpay = async (req,res) => {
     try {
-        
+        if (!razorpayInstance) {
+            return res.status(500).json({message:'Razorpay not configured. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET'})
+        }
          const {items , amount , address} = req.body;
          const userId = req.userId;
          const orderData = {
@@ -79,6 +84,9 @@ export const placeOrderRazorpay = async (req,res) => {
 
 export const verifyRazorpay = async (req,res) =>{
     try {
+        if (!razorpayInstance) {
+            return res.status(500).json({message:'Razorpay not configured'})
+        }
         const userId = req.userId
         const {razorpay_order_id} = req.body
         const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id)
