@@ -8,10 +8,16 @@ const firebaseConfig = {
   messagingSenderId: "242165258894",
   appId: "1:242165258894:web:0155a2ced93e20073247df"
 };
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app)
-const provider = new GoogleAuthProvider()
 
+let auth = null
+let provider = null
+
+try {
+  const app = initializeApp(firebaseConfig);
+  auth = getAuth(app)
+  provider = new GoogleAuthProvider()
+} catch (error) {
+  console.log("Firebase not configured:", error)
+}
 
 export {auth , provider}
-
